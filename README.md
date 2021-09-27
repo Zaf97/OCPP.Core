@@ -1,3 +1,5 @@
+This fork aims to update the OCPP.Core project to support an implementation with a Controller based architecture of the solution. Hope you find it helpfull.
+
 # OCPP.Core
 OCPP.Core is an OCPP ([Open ChargePoint Protocol](https://en.wikipedia.org/wiki/Open_Charge_Point_Protocol)) server written in .NET-Core. It includes a management Web-UI for administration of charge points and charge tokens (RFID-Token)
 
