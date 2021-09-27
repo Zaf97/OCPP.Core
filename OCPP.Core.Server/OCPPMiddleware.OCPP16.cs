@@ -19,7 +19,7 @@ namespace OCPP.Core.Server
         /// <summary>
         /// Waits for new OCPP V1.6 messages on the open websocket connection and delegates processing to a controller
         /// </summary>
-        private async Task Receive16(ChargePointStatus chargePointStatus, HttpContext context)
+        public async Task Receive16(ChargePointStatus chargePointStatus, HttpContext context)
         {
             ILogger logger = _logFactory.CreateLogger("OCPPMiddleware.OCPP16");
             ControllerOCPP16 controller16 = new ControllerOCPP16(_configuration, _logFactory, chargePointStatus);
@@ -116,7 +116,7 @@ namespace OCPP.Core.Server
         /// <summary>
         /// Waits for new OCPP V1.6 messages on the open websocket connection and delegates processing to a controller
         /// </summary>
-        private async Task Reset16(ChargePointStatus chargePointStatus, HttpContext apiCallerContext)
+        public async Task Reset16(ChargePointStatus chargePointStatus, HttpContext apiCallerContext)
         {
             ILogger logger = _logFactory.CreateLogger("OCPPMiddleware.OCPP16");
             ControllerOCPP16 controller16 = new ControllerOCPP16(_configuration, _logFactory, chargePointStatus);
@@ -150,7 +150,7 @@ namespace OCPP.Core.Server
         /// <summary>
         /// Sends a Unlock-Request to the chargepoint
         /// </summary>
-        private async Task UnlockConnector16(ChargePointStatus chargePointStatus, HttpContext apiCallerContext)
+        public async Task UnlockConnector16(ChargePointStatus chargePointStatus, HttpContext apiCallerContext)
         {
             ILogger logger = _logFactory.CreateLogger("OCPPMiddleware.OCPP16");
             ControllerOCPP16 controller16 = new ControllerOCPP16(_configuration, _logFactory, chargePointStatus);
@@ -182,7 +182,7 @@ namespace OCPP.Core.Server
             await apiCallerContext.Response.WriteAsync(apiResult);
         }
 
-        private async Task SendOcpp16Message(OCPPMessage msg, ILogger logger, WebSocket webSocket)
+        public async Task SendOcpp16Message(OCPPMessage msg, ILogger logger, WebSocket webSocket)
         {
             string ocppTextMessage = null;
 

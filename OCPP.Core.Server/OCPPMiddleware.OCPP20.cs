@@ -20,7 +20,7 @@ namespace OCPP.Core.Server
         /// <summary>
         /// Waits for new OCPP V2.0 messages on the open websocket connection and delegates processing to a controller
         /// </summary>
-        private async Task Receive20(ChargePointStatus chargePointStatus, HttpContext context)
+        public async Task Receive20(ChargePointStatus chargePointStatus, HttpContext context)
         {
             ILogger logger = _logFactory.CreateLogger("OCPPMiddleware.OCPP20");
             ControllerOCPP20 controller20 = new ControllerOCPP20(_configuration, _logFactory, chargePointStatus);
@@ -117,7 +117,7 @@ namespace OCPP.Core.Server
         /// <summary>
         /// Sends a (Soft-)Reset to the chargepoint
         /// </summary>
-        private async Task Reset20(ChargePointStatus chargePointStatus, HttpContext apiCallerContext)
+        public async Task Reset20(ChargePointStatus chargePointStatus, HttpContext apiCallerContext)
         {
             ILogger logger = _logFactory.CreateLogger("OCPPMiddleware.OCPP20");
             ControllerOCPP20 controller20 = new ControllerOCPP20(_configuration, _logFactory, chargePointStatus);
@@ -154,7 +154,7 @@ namespace OCPP.Core.Server
         /// <summary>
         /// Sends a Unlock-Request to the chargepoint
         /// </summary>
-        private async Task UnlockConnector20(ChargePointStatus chargePointStatus, HttpContext apiCallerContext)
+        public async Task UnlockConnector20(ChargePointStatus chargePointStatus, HttpContext apiCallerContext)
         {
             ILogger logger = _logFactory.CreateLogger("OCPPMiddleware.OCPP20");
             ControllerOCPP20 controller20 = new ControllerOCPP20(_configuration, _logFactory, chargePointStatus);
@@ -188,7 +188,7 @@ namespace OCPP.Core.Server
             await apiCallerContext.Response.WriteAsync(apiResult);
         }
 
-        private async Task SendOcpp20Message(OCPPMessage msg, ILogger logger, WebSocket webSocket)
+        public async Task SendOcpp20Message(OCPPMessage msg, ILogger logger, WebSocket webSocket)
         {
             string ocppTextMessage = null;
 

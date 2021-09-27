@@ -56,6 +56,7 @@ namespace OCPP.Core.Management.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(UserModel userModel, string returnUrl = null)
         {
+
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {

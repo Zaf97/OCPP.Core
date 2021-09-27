@@ -59,7 +59,7 @@ namespace OCPP.Core.Server
 
                 if (connectorId > 0 && meterKWH >= 0)
                 {
-                    UpdateConnectorStatus(connectorId, null, null, meterKWH, meterTime);
+                     UpdateConnectorStatus(connectorId, null, null, meterKWH, meterTime);
                 }
 
                 if (transactionEventRequest.EventType == TransactionEventEnumType.Started)

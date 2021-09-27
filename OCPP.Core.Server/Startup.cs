@@ -56,6 +56,10 @@ namespace OCPP.Core.Server
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddSwaggerGen();
+
+            services.AddScoped<OCPPMiddleware>();
+            services.AddScoped<OCPPCoreContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -74,16 +78,27 @@ namespace OCPP.Core.Server
             }
 
             // Set WebSocketsOptions
-            var webSocketOptions = new WebSocketOptions() 
+            var webSocketOptions = new WebSocketOptions()
             {
-                ReceiveBufferSize = 8 * 1024
+                KeepAliveInterval = TimeSpan.FromSeconds(120),
             };
 
-            // Accept WebSocket
             app.UseWebSockets(webSocketOptions);
 
-            // Integrate custom OCPP middleware for message processing
-            app.UseOCPPMiddleware();
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            });
+
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+
+
         }
     }
 }
