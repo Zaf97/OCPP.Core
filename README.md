@@ -14,6 +14,9 @@ Here's a report of my [first real live experiences](Real_life_Experiences_KEBA.m
 The OCPP-Server currently handles the following messages:
 
 OCPP V1.6:
+<br/>
+Operations Initiated by Charge Point.
+
 * BootNotification
 * Heartbeat
 * Authorize
@@ -22,6 +25,10 @@ OCPP V1.6:
 * MeterValues
 * StatusNotification
 * DataTransfer
+
+<br/>
+Operations Initiated by Charge Point.
+
 * Reset
 * UnlockConnector
 
