@@ -53,21 +53,21 @@ namespace OCPP.Core.Server
 
                 switch (statusNotificationRequest.Status)
                 {
-                    case StatusNotificationRequestStatus.Available:
+                    case ChargingPointStatus.Available:
                         newStatus = ConnectorStatusEnum.Available;
                         break;
-                    case StatusNotificationRequestStatus.Preparing:
-                    case StatusNotificationRequestStatus.Charging:
-                    case StatusNotificationRequestStatus.SuspendedEVSE:
-                    case StatusNotificationRequestStatus.SuspendedEV:
-                    case StatusNotificationRequestStatus.Finishing:
-                    case StatusNotificationRequestStatus.Reserved:
+                    case ChargingPointStatus.Preparing:
+                    case ChargingPointStatus.Charging:
+                    case ChargingPointStatus.SuspendedEVSE:
+                    case ChargingPointStatus.SuspendedEV:
+                    case ChargingPointStatus.Finishing:
+                    case ChargingPointStatus.Reserved:
                         newStatus = ConnectorStatusEnum.Occupied;
                         break;
-                    case StatusNotificationRequestStatus.Unavailable:
+                    case ChargingPointStatus.Unavailable:
                         newStatus = ConnectorStatusEnum.Unavailable;
                         break;
-                    case StatusNotificationRequestStatus.Faulted:
+                    case ChargingPointStatus.Faulted:
                         newStatus = ConnectorStatusEnum.Faulted;
                         break;
 

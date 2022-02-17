@@ -35,7 +35,7 @@ namespace OCPP.Core.Server.Messages_OCPP16
         [Newtonsoft.Json.JsonProperty("errorCode", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public StatusNotificationRequestErrorCode ErrorCode { get; set; }
+        public ChargePointErrorCode ErrorCode { get; set; }
 
         [Newtonsoft.Json.JsonProperty("info", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.StringLength(50)]
@@ -44,7 +44,7 @@ namespace OCPP.Core.Server.Messages_OCPP16
         [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public StatusNotificationRequestStatus Status { get; set; }
+        public ChargingPointStatus Status { get; set; }
 
         [Newtonsoft.Json.JsonProperty("timestamp", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.DateTimeOffset? Timestamp { get; set; }
@@ -61,7 +61,7 @@ namespace OCPP.Core.Server.Messages_OCPP16
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
-    public enum StatusNotificationRequestErrorCode
+    public enum ChargePointErrorCode
     {
         [System.Runtime.Serialization.EnumMember(Value = @"ConnectorLockFailure")]
         ConnectorLockFailure = 0,
@@ -114,7 +114,7 @@ namespace OCPP.Core.Server.Messages_OCPP16
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
-    public enum StatusNotificationRequestStatus
+    public enum ChargingPointStatus
     {
         [System.Runtime.Serialization.EnumMember(Value = @"Available")]
         Available = 0,
