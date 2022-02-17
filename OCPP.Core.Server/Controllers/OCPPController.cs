@@ -41,7 +41,7 @@ namespace OCPP.Core.Server.Controllers
             _logger = logFactory.CreateLogger("OCPPMiddleware");
         }
 
-        [HttpGet("/OCPP/{connectorId}")]
+        [HttpGet("{connectorId}")]
         public async Task Get(string connectorId)
         {
             var context = HttpContext;

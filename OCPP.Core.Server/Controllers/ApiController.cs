@@ -42,30 +42,10 @@ public class ApiController : Microsoft.AspNetCore.Mvc.ControllerBase
     public async Task Get(string cmd)
     {
         var context = HttpContext;
-        // Check authentication (X-API-Key)
-        string apiKeyConfig = _configuration.GetValue<string>("ApiKey");
-        if (!string.IsNullOrWhiteSpace(apiKeyConfig))
-        {
-            // ApiKey specified => check request
-            string apiKeyCaller = context.Request.Headers["X-API-Key"].FirstOrDefault();
-            if (apiKeyConfig == apiKeyCaller)
-            {
-                // API-Key matches
-                _logger.LogInformation("OCPPMiddleware => Success: X-API-Key matches");
-            }
-            else
-            {
-                // API-Key does NOT matches => authentication failure!!!
-                _logger.LogWarning("OCPPMiddleware => Failure: Wrong X-API-Key! Caller='{0}'", apiKeyCaller);
-                context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                return;
-            }
-        }
-        else
-        {
-            // No API-Key configured => no authenticatiuon
-            _logger.LogWarning("OCPPMiddleware => No X-API-Key configured!");
-        }
+        // Check authentication (X-API-Key) 
+        // TODO change implementation to support Bearer Token
+        if (!checkedAuth(context))
+            return;
 
         // format: /API/<command>[/chargepointId]
         string[] urlParts = context.Request.Path.Value.Split('/');
@@ -90,47 +70,6 @@ public class ApiController : Microsoft.AspNetCore.Mvc.ControllerBase
             {
                 _logger.LogError(exp, $"OCPPMiddleware => Error: {exp.Message}");
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            }
-
-        }
-        else if (cmd == "Reset")
-        {
-            if (!string.IsNullOrEmpty(urlChargePointId))
-            {
-                try
-                {
-                    ChargePointStatus status = null;
-                    if (_chargePointStatusDict.TryGetValue(urlChargePointId, out status))
-                    {
-                        // Send message to chargepoint
-                        if (status.Protocol == Protocol_OCPP20)
-                        {
-                            // OCPP V2.0
-                            await oCPPMiddleware.Reset20(status, context);
-                        }
-                        else
-                        {
-                            // OCPP V1.6
-                            await oCPPMiddleware.Reset16(status, context);
-                        }
-                    }
-                    else
-                    {
-                        // Chargepoint offline
-                        _logger.LogError($"OCPPMiddleware SoftReset => Chargepoint offline: {urlChargePointId}");
-                        context.Response.StatusCode = (int)HttpStatusCode.NotFound;
-                    }
-                }
-                catch (Exception exp)
-                {
-                    _logger.LogError(exp, $"OCPPMiddleware SoftReset => Error: {exp.Message}");
-                    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                }
-            }
-            else
-            {
-                _logger.LogError("OCPPMiddleware SoftReset => Missing chargepoint ID");
-                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
             }
         }
         else if (cmd == "UnlockConnector")
@@ -178,6 +117,75 @@ public class ApiController : Microsoft.AspNetCore.Mvc.ControllerBase
             // Unknown action/function
             _logger.LogWarning($"OCPPMiddleware => action/function: {cmd}");
             context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+        }
+    }
+
+    [HttpGet("Reset/{chargePointId}")]
+    public async Task Reset(string chargePointId)
+    {
+        var context = HttpContext;
+        // Check authentication (X-API-Key) 
+        // TODO change implementation to support Bearer Token
+        if (!checkedAuth(context))
+            return;
+
+        try
+        {
+            ChargePointStatus status = null;
+            if (_chargePointStatusDict.TryGetValue(chargePointId, out status))
+            {
+                // Send message to chargepoint
+                if (status.Protocol == Protocol_OCPP20)
+                {
+                    // OCPP V2.0
+                    await oCPPMiddleware.Reset20(status, context);
+                }
+                else
+                {
+                    // OCPP V1.6
+                    await oCPPMiddleware.Reset16(status, context);
+                }
+            }
+            else
+            {
+                // Chargepoint offline
+                _logger.LogError($"OCPPMiddleware SoftReset => Chargepoint offline: {chargePointId}");
+                context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+            }
+        }
+        catch (Exception exp)
+        {
+            _logger.LogError(exp, $"OCPPMiddleware SoftReset => Error: {exp.Message}");
+            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+        }
+    }
+
+    private bool checkedAuth(HttpContext context)
+    {
+        string apiKeyConfig = _configuration.GetValue<string>("ApiKey");
+        if (!string.IsNullOrWhiteSpace(apiKeyConfig))
+        {
+            // ApiKey specified => check request
+            string apiKeyCaller = context.Request.Headers["X-API-Key"].FirstOrDefault();
+            if (apiKeyConfig == apiKeyCaller)
+            {
+                // API-Key matches
+                _logger.LogInformation("OCPPMiddleware => Success: X-API-Key matches");
+                return true;
+            }
+            else
+            {
+                // API-Key does NOT matches => authentication failure!!!
+                _logger.LogWarning("OCPPMiddleware => Failure: Wrong X-API-Key! Caller='{0}'", apiKeyCaller);
+                context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                return false;
+            }
+        }
+        else
+        {
+            // No API-Key configured => no authenticatiuon
+            _logger.LogWarning("OCPPMiddleware => No X-API-Key configured!");
+            return true;
         }
     }
 
