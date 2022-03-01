@@ -339,5 +339,5 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 
-/OCPP.Core.Server/appsettings.json
-/OCPP.Core.Management/appsettings.json
+OCPP.Core.Management/appsettings.json
+OCPP.Core.Server/appsettings.json

@@ -51,15 +51,7 @@ namespace OCPP.Core.Server
 
             ChargePointStatus chargePointStatus = null;
 
-            if (context.Request.Path.StartsWithSegments("/OCPP"))
-            {
-
-            }
-            if (context.Request.Path.StartsWithSegments("/API"))
-            {
-                
-            }
-            else if (context.Request.Path.StartsWithSegments("/"))
+            if (context.Request.Path.StartsWithSegments("/"))
             {
                 try
                 {

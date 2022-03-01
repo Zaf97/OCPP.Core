@@ -141,7 +141,7 @@ namespace OCPP.Core.Management.Controllers
                 using (OCPPCoreContext dbContext = new OCPPCoreContext(this.Config))
                 {
                     // List of charge point status (OCPP messages) with latest transaction (if one exist)
-                    List<ConnectorStatusView> connectorStatusViewList = dbContext.ConnectorStatusViews.ToList<ConnectorStatusView>();
+                    List<ConnectorStatusView> connectorStatusViewList = dbContext.ConnectorStatusViews.ToList();
 
                     // Count connectors for every charge point (=> naming scheme)
                     Dictionary<string, int> dictConnectorCount = new Dictionary<string, int>();
