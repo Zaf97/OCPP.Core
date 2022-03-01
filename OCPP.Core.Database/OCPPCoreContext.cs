@@ -52,15 +52,10 @@ namespace OCPP.Core.Database
         {
             if (!optionsBuilder.IsConfigured)
             {
-                string sqlConnString = _configuration.GetConnectionString("SqlServer");
-                string liteConnString = _configuration.GetConnectionString("SQLite");
-                if (!string.IsNullOrWhiteSpace(sqlConnString))
+                string npgConnString = _configuration.GetConnectionString("PostgresServer");
+                if (!string.IsNullOrWhiteSpace(npgConnString))
                 {
-                    optionsBuilder.UseSqlServer(sqlConnString);
-                }
-                else if (!string.IsNullOrWhiteSpace(liteConnString))
-                {
-                    optionsBuilder.UseSqlite(liteConnString);
+                    optionsBuilder.UseNpgsql(npgConnString);
                 }
             }
         }
