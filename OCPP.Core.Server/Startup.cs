@@ -29,6 +29,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -45,21 +46,22 @@ namespace OCPP.Core.Server
         /// </summary>
         private ILoggerFactory LoggerFactory { get; set; }
 
-        public Startup(IConfiguration configuration)
+        public Startup()
         {
-            Configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            var configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings-passwords.json", optional: false)
+                .Build();
+
+            services.AddControllers().AddControllersAsServices();
             services.AddSwaggerGen();
 
             services.AddScoped<OCPPMiddleware>();
-            services.AddScoped<OCPPCoreContext>();
+            services.AddScoped<OCPPCoreContext>(provider => new(configuration));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

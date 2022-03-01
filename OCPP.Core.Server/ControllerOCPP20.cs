@@ -34,8 +34,8 @@ namespace OCPP.Core.Server
         /// <summary>
         /// Constructor
         /// </summary>
-        public ControllerOCPP20(IConfiguration config, ILoggerFactory loggerFactory, ChargePointStatus chargePointStatus) :
-            base(config, loggerFactory, chargePointStatus)
+        public ControllerOCPP20(IConfiguration config, ILoggerFactory loggerFactory, ChargePointStatus chargePointStatus, OCPPCoreContext context) :
+            base(config, loggerFactory, chargePointStatus, context)
         {
             Logger = loggerFactory.CreateLogger(typeof(ControllerOCPP20));
         }

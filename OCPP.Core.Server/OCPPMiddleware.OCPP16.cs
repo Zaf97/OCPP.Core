@@ -22,7 +22,7 @@ namespace OCPP.Core.Server
         public async Task Receive16(ChargePointStatus chargePointStatus, HttpContext context)
         {
             ILogger logger = _logFactory.CreateLogger("OCPPMiddleware.OCPP16");
-            ControllerOCPP16 controller16 = new ControllerOCPP16(_configuration, _logFactory, chargePointStatus);
+            ControllerOCPP16 controller16 = new ControllerOCPP16(_configuration, _logFactory, chargePointStatus, this.context);
 
             byte[] buffer = new byte[1024 * 4];
             MemoryStream memStream = new MemoryStream(buffer.Length);
@@ -49,7 +49,7 @@ namespace OCPP.Core.Server
                             try
                             {
                                 // Write incoming message into dump directory
-                                File.WriteAllBytes(path, bMessage);
+                                //File.WriteAllBytes(path, bMessage);
                             }
                             catch (Exception exp)
                             {
@@ -57,7 +57,7 @@ namespace OCPP.Core.Server
                             }
                         }
 
-                        string ocppMessage = UTF8Encoding.UTF8.GetString(bMessage);
+                        string ocppMessage = Encoding.UTF8.GetString(bMessage);
 
                         Match match = Regex.Match(ocppMessage, MessageRegExp);
                         if (match != null && match.Groups != null && match.Groups.Count >= 3)
@@ -119,7 +119,6 @@ namespace OCPP.Core.Server
         public async Task Reset16(ChargePointStatus chargePointStatus, HttpContext apiCallerContext)
         {
             ILogger logger = _logFactory.CreateLogger("OCPPMiddleware.OCPP16");
-            ControllerOCPP16 controller16 = new ControllerOCPP16(_configuration, _logFactory, chargePointStatus);
 
             Messages_OCPP16.ResetRequest resetRequest = new Messages_OCPP16.ResetRequest();
             resetRequest.Type = Messages_OCPP16.ResetRequestType.Soft;
@@ -153,7 +152,6 @@ namespace OCPP.Core.Server
         public async Task UnlockConnector16(ChargePointStatus chargePointStatus, HttpContext apiCallerContext)
         {
             ILogger logger = _logFactory.CreateLogger("OCPPMiddleware.OCPP16");
-            ControllerOCPP16 controller16 = new ControllerOCPP16(_configuration, _logFactory, chargePointStatus);
 
             Messages_OCPP16.UnlockConnectorRequest unlockConnectorRequest = new Messages_OCPP16.UnlockConnectorRequest();
             unlockConnectorRequest.ConnectorId = 0;
@@ -185,14 +183,18 @@ namespace OCPP.Core.Server
         /// <summary>
         /// Waits for new OCPP V1.6 messages on the open websocket connection and delegates processing to a controller
         /// </summary>
-        public async Task SetChargingProfile(ChargePointStatus chargePointStatus, HttpContext apiCallerContext, int connectorId)
+        public async Task SetChargingProfile(ChargePointStatus chargePointStatus, HttpContext apiCallerContext, int connectorId, Messages_OCPP16.ChargingProfile chargingProfile)
         {
             ILogger logger = _logFactory.CreateLogger("OCPPMiddleware.OCPP16");
-            ControllerOCPP16 controller16 = new ControllerOCPP16(_configuration, _logFactory, chargePointStatus);
 
             Messages_OCPP16.SetChargingProfileRequest setChargingProfileRequest = new Messages_OCPP16.SetChargingProfileRequest();
             setChargingProfileRequest.ConnectorId = connectorId;
-            setChargingProfileRequest.CsChargingProfile = new Messages_OCPP16.ChargingProfile();
+            if(chargingProfile == null)
+            {
+                setChargingProfileRequest.CsChargingProfile = new Messages_OCPP16.ChargingProfile();
+                setChargingProfileRequest.CsChargingProfile.ChargingSchedule = new Messages_OCPP16.ChargingSchedule();
+                setChargingProfileRequest.CsChargingProfile.ChargingSchedule.ChargingSchedulePeriod = new List<Messages_OCPP16.ChargingSchedulePeriod> { new Messages_OCPP16.ChargingSchedulePeriod() };
+            }
             string jsonResetRequest = JsonConvert.SerializeObject(setChargingProfileRequest);
 
             OCPPMessage msgOut = new OCPPMessage();
@@ -253,7 +255,7 @@ namespace OCPP.Core.Server
                 string path = Path.Combine(dumpDir, string.Format("{0}_ocpp16-out.txt", DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss-ffff")));
                 try
                 {
-                    File.WriteAllText(path, ocppTextMessage);
+                    //File.WriteAllText(path, ocppTextMessage);
                 }
                 catch (Exception exp)
                 {

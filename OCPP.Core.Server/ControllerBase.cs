@@ -30,6 +30,8 @@ namespace OCPP.Core.Server
 {
     public partial class ControllerBase
     {
+        private readonly OCPPCoreContext context;
+
         /// <summary>
         /// Configuration context for reading app settings
         /// </summary>
@@ -48,10 +50,10 @@ namespace OCPP.Core.Server
         /// <summary>
         /// Constructor
         /// </summary>
-        public ControllerBase(IConfiguration config, ILoggerFactory loggerFactory, ChargePointStatus chargePointStatus)
+        public ControllerBase(IConfiguration config, ILoggerFactory loggerFactory, ChargePointStatus chargePointStatus, OCPPCoreContext context)
         {
             Configuration = config;
-
+            this.context = context;
             if (chargePointStatus != null)
             {
                 ChargePointStatus = chargePointStatus;
@@ -70,34 +72,33 @@ namespace OCPP.Core.Server
         {
             try
             {
-                using (OCPPCoreContext dbContext = new OCPPCoreContext(Configuration))
+
+                ConnectorStatus connectorStatus = context.Find<ConnectorStatus>(ChargePointStatus.Id, connectorId);
+                if (connectorStatus == null)
                 {
-                    ConnectorStatus connectorStatus = dbContext.Find<ConnectorStatus>(ChargePointStatus.Id, connectorId);
-                    if (connectorStatus == null)
-                    {
-                        // no matching entry => create connector status
-                        connectorStatus = new ConnectorStatus();
-                        connectorStatus.ChargePointId = ChargePointStatus.Id;
-                        connectorStatus.ConnectorId = connectorId;
-                        Logger.LogTrace("UpdateConnectorStatus => Creating new DB-ConnectorStatus: ID={0} / Connector={1}", connectorStatus.ChargePointId, connectorStatus.ConnectorId);
-                        dbContext.Add<ConnectorStatus>(connectorStatus);
-                    }
-
-                    if (!string.IsNullOrEmpty(status))
-                    {
-                        connectorStatus.LastStatus = status;
-                        connectorStatus.LastStatusTime = ((statusTime.HasValue) ? statusTime.Value : DateTimeOffset.UtcNow).DateTime;
-                    }
-
-                    if (meter.HasValue)
-                    {
-                        connectorStatus.LastMeter = meter.Value;
-                        connectorStatus.LastMeterTime = ((meterTime.HasValue) ? meterTime.Value : DateTimeOffset.UtcNow).DateTime;
-                    }
-                    dbContext.SaveChanges();
-                    Logger.LogInformation("UpdateConnectorStatus => Save ConnectorStatus: ID={0} / Connector={1} / Status={2} / Meter={3}", connectorStatus.ChargePointId, connectorId, status, meter);
-                    return true;
+                    // no matching entry => create connector status
+                    connectorStatus = new ConnectorStatus();
+                    connectorStatus.ChargePointId = ChargePointStatus.Id;
+                    connectorStatus.ConnectorId = connectorId;
+                    Logger.LogTrace("UpdateConnectorStatus => Creating new DB-ConnectorStatus: ID={0} / Connector={1}", connectorStatus.ChargePointId, connectorStatus.ConnectorId);
+                    context.Add<ConnectorStatus>(connectorStatus);
                 }
+
+                if (!string.IsNullOrEmpty(status))
+                {
+                    connectorStatus.LastStatus = status;
+                    connectorStatus.LastStatusTime = ((statusTime.HasValue) ? statusTime.Value : DateTimeOffset.UtcNow).DateTime.ToUniversalTime();
+                }
+
+                if (meter.HasValue)
+                {
+                    connectorStatus.LastMeter = meter.Value;
+                    connectorStatus.LastMeterTime = ((meterTime.HasValue) ? meterTime.Value : DateTimeOffset.UtcNow).DateTime.ToUniversalTime();
+                }
+                context.SaveChanges();
+                Logger.LogInformation("UpdateConnectorStatus => Save ConnectorStatus: ID={0} / Connector={1} / Status={2} / Meter={3}", connectorStatus.ChargePointId, connectorId, status, meter);
+                return true;
+
             }
             catch (Exception exp)
             {

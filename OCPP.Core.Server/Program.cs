@@ -34,19 +34,9 @@ namespace OCPP.Core.Server
     {
         public static void Main(string[] args)
         {
-            IConfiguration config = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: false)
-                .AddJsonFile("appsettings-passwords.json", optional: false)
-                .Build();
 
             try
             {
-                // Force the EF model creation for faster startup
-                using (OCPPCoreContext dbContext = new OCPPCoreContext(config))
-                {
-                    IModel model = dbContext.Model;
-                }
-
                 CreateHostBuilder(args).Build().Run();
             }
             catch //(Exception e)

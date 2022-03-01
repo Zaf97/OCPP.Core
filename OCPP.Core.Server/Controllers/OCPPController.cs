@@ -13,6 +13,8 @@ using System.Threading;
 using System.Text;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using OCPP.Core.Server.Messages_OCPP16;
 
 namespace OCPP.Core.Server.Controllers
 {
@@ -31,7 +33,7 @@ namespace OCPP.Core.Server.Controllers
         private static readonly string[] SupportedProtocols = { Protocol_OCPP20, Protocol_OCPP16 /*, "ocpp1.5" */};
 
         // Dictionary with status objects for each charge point
-        private static Dictionary<string, ChargePointStatus> _chargePointStatusDict = new Dictionary<string, ChargePointStatus>();
+        public static Dictionary<int, ChargePointStatus> _chargePointStatusDict = new Dictionary<int, ChargePointStatus>();
 
         public OCPPController(IConfiguration config, ILoggerFactory logFactory, OCPPCoreContext dbContext, OCPPMiddleware oCPPMiddleware)
         {
@@ -42,13 +44,13 @@ namespace OCPP.Core.Server.Controllers
         }
 
         [HttpGet("{connectorId}")]
-        public async Task Get(string connectorId)
+        public async Task Get(int connectorId)
         {
             var context = HttpContext;
             ChargePointStatus chargePointStatus = new();
             _logger.LogInformation($"OCPPMiddleware => Connection request with chargepoint identifier = '{connectorId}'");
 
-            ChargePoint chargePoint = await dbContext.ChargePoints.Where(row => row.ChargePointId == connectorId).FirstOrDefaultAsync();
+            ChargePoint chargePoint = await dbContext.ChargePoints.Where(row => row.ChargePointId == connectorId.ToString()).FirstOrDefaultAsync();
 
             if (chargePoint == null)
             {
@@ -178,7 +180,61 @@ namespace OCPP.Core.Server.Controllers
                     await SocketCommunication(context, chargePointStatus, connectorId, subProtocol);
                 }
             }
+        }
 
+        internal async Task SetChargingProfile(int chargePointId, ChargingProfile chargingProfile)
+        {
+            var context = HttpContext;
+
+            try
+            {
+                ChargePointStatus status = null;
+                if (_chargePointStatusDict.TryGetValue(chargePointId, out status))
+                {
+                    // Send message to chargepoint
+                    if (status.Protocol == Protocol_OCPP20)
+                    {
+                        // OCPP V2.0
+                        throw new NotImplementedException();
+                    }
+                    else
+                    {
+                        // OCPP V1.6
+                        await oCPPMiddleware.SetChargingProfile(status, context, chargePointId, chargingProfile);
+                    }
+                }
+                else
+                {
+                    // Chargepoint offline
+                    _logger.LogError($"OCPPMiddleware SoftReset => Chargepoint offline: {chargePointId}");
+                    context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+                }
+            }
+            catch (Exception exp)
+            {
+                _logger.LogError(exp, $"OCPPMiddleware SoftReset => Error: {exp.Message}");
+                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            }
+        }
+
+        internal async Task GetStatus(HttpContext context)
+        {
+            try
+            {
+                List<ChargePointStatus> statusList = new List<ChargePointStatus>();
+                foreach (ChargePointStatus status in _chargePointStatusDict.Values)
+                {
+                    statusList.Add(status);
+                }
+                string jsonStatus = JsonConvert.SerializeObject(statusList);
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsync(jsonStatus);
+            }
+            catch (Exception exp)
+            {
+                _logger.LogError(exp, $"OCPPMiddleware => Error: {exp.Message}");
+                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            }
         }
 
         private static string GetSupportedProtocol(HttpContext context)
@@ -197,7 +253,7 @@ namespace OCPP.Core.Server.Controllers
             return subProtocol;
         }
 
-        private static bool ChargingStatusHandling(ChargePointStatus chargePointStatus, string chargepointIdentifier)
+        private static bool ChargingStatusHandling(ChargePointStatus chargePointStatus, int chargepointIdentifier)
         {
             bool statusSuccess;
             lock (_chargePointStatusDict)
@@ -220,7 +276,7 @@ namespace OCPP.Core.Server.Controllers
             return statusSuccess;
         }
 
-        private async Task SocketCommunication(HttpContext context, ChargePointStatus chargePointStatus, string chargepointIdentifier, string subProtocol)
+        private async Task SocketCommunication(HttpContext context, ChargePointStatus chargePointStatus, int chargepointIdentifier, string subProtocol)
         {
             using var webSocket = await context.WebSockets.AcceptWebSocketAsync(subProtocol);
             _logger.LogTrace($"OCPPMiddleware => WebSocket connection with charge point '{chargepointIdentifier}'");

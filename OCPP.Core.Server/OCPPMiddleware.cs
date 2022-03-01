@@ -30,6 +30,7 @@ namespace OCPP.Core.Server
         private readonly ILoggerFactory _logFactory;
         private readonly ILogger _logger;
         private readonly IConfiguration _configuration;
+        private readonly OCPPCoreContext context;
 
         // Dictionary with status objects for each charge point
         private static Dictionary<string, ChargePointStatus> _chargePointStatusDict = new Dictionary<string, ChargePointStatus>();
@@ -37,11 +38,11 @@ namespace OCPP.Core.Server
         // Dictionary for processing asynchronous API calls
         private Dictionary<string, OCPPMessage> _requestQueue = new Dictionary<string, OCPPMessage>();
 
-        public OCPPMiddleware(ILoggerFactory logFactory, IConfiguration configuration)
+        public OCPPMiddleware(ILoggerFactory logFactory, IConfiguration configuration, OCPPCoreContext context)
         {
             _logFactory = logFactory;
             _configuration = configuration;
-
+            this.context = context;
             _logger = logFactory.CreateLogger("OCPPMiddleware");
         }
 

@@ -36,11 +36,6 @@ namespace OCPP.Core.Database
             _configuration = config;
         }
 
-        public OCPPCoreContext(DbContextOptions<OCPPCoreContext> options)
-            : base(options)
-        {
-        }
-
         public virtual DbSet<ChargePoint> ChargePoints { get; set; }
         public virtual DbSet<ChargeTag> ChargeTags { get; set; }
         public virtual DbSet<ConnectorStatus> ConnectorStatuses { get; set; }

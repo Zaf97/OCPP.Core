@@ -30,13 +30,16 @@ namespace OCPP.Core.Server
 {
     public partial class ControllerOCPP16 : ControllerBase
     {
+        private readonly OCPPCoreContext dbContext;
+
         /// <summary>
         /// Constructor
         /// </summary>
-        public ControllerOCPP16(IConfiguration config, ILoggerFactory loggerFactory, ChargePointStatus chargePointStatus) :
-            base(config, loggerFactory, chargePointStatus)
+        public ControllerOCPP16(IConfiguration config, ILoggerFactory loggerFactory, ChargePointStatus chargePointStatus, OCPPCoreContext dbContext) :
+            base(config, loggerFactory, chargePointStatus, dbContext)
         {
             Logger = loggerFactory.CreateLogger(typeof(ControllerOCPP16));
+            this.dbContext = dbContext;
         }
 
         /// <summary>
@@ -151,9 +154,9 @@ namespace OCPP.Core.Server
                             msgLog.Message = message;
                             msgLog.Result = result;
                             msgLog.ErrorCode = errorCode;
-                            dbContext.MessageLogs.Add(msgLog);
+                            //dbContext.MessageLogs.Add(msgLog);
                             Logger.LogTrace("MessageLog => Writing entry '{0}'", message);
-                            dbContext.SaveChanges();
+                            //dbContext.SaveChanges();
                         }
                         return true;
                     }

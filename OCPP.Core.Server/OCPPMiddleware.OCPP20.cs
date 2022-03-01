@@ -23,7 +23,7 @@ namespace OCPP.Core.Server
         public async Task Receive20(ChargePointStatus chargePointStatus, HttpContext context)
         {
             ILogger logger = _logFactory.CreateLogger("OCPPMiddleware.OCPP20");
-            ControllerOCPP20 controller20 = new ControllerOCPP20(_configuration, _logFactory, chargePointStatus);
+            ControllerOCPP20 controller20 = new ControllerOCPP20(_configuration, _logFactory, chargePointStatus, this.context);
 
             byte[] buffer = new byte[1024 * 4];
             MemoryStream memStream = new MemoryStream(buffer.Length);
@@ -120,7 +120,6 @@ namespace OCPP.Core.Server
         public async Task Reset20(ChargePointStatus chargePointStatus, HttpContext apiCallerContext)
         {
             ILogger logger = _logFactory.CreateLogger("OCPPMiddleware.OCPP20");
-            ControllerOCPP20 controller20 = new ControllerOCPP20(_configuration, _logFactory, chargePointStatus);
 
             Messages_OCPP20.ResetRequest resetRequest = new Messages_OCPP20.ResetRequest();
             resetRequest.Type = Messages_OCPP20.ResetEnumType.OnIdle;
@@ -157,7 +156,6 @@ namespace OCPP.Core.Server
         public async Task UnlockConnector20(ChargePointStatus chargePointStatus, HttpContext apiCallerContext)
         {
             ILogger logger = _logFactory.CreateLogger("OCPPMiddleware.OCPP20");
-            ControllerOCPP20 controller20 = new ControllerOCPP20(_configuration, _logFactory, chargePointStatus);
 
             Messages_OCPP20.UnlockConnectorRequest unlockConnectorRequest = new Messages_OCPP20.UnlockConnectorRequest();
             unlockConnectorRequest.EvseId = 0;
