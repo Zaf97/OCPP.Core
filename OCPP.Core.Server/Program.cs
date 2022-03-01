@@ -36,6 +36,7 @@ namespace OCPP.Core.Server
         {
             IConfiguration config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: false)
+                .AddJsonFile("appsettings-passwords.json", optional: false)
                 .Build();
 
             try
