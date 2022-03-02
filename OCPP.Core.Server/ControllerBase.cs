@@ -30,7 +30,7 @@ namespace OCPP.Core.Server
 {
     public partial class ControllerBase
     {
-        private readonly OCPPCoreContext context;
+        public readonly OCPPCoreContext dbContext;
 
         /// <summary>
         /// Configuration context for reading app settings
@@ -53,7 +53,7 @@ namespace OCPP.Core.Server
         public ControllerBase(IConfiguration config, ILoggerFactory loggerFactory, ChargePointStatus chargePointStatus, OCPPCoreContext context)
         {
             Configuration = config;
-            this.context = context;
+            this.dbContext = context;
             if (chargePointStatus != null)
             {
                 ChargePointStatus = chargePointStatus;
@@ -73,7 +73,7 @@ namespace OCPP.Core.Server
             try
             {
 
-                ConnectorStatus connectorStatus = context.Find<ConnectorStatus>(ChargePointStatus.Id, connectorId);
+                ConnectorStatus connectorStatus = dbContext.Find<ConnectorStatus>(ChargePointStatus.Id, connectorId);
                 if (connectorStatus == null)
                 {
                     // no matching entry => create connector status
@@ -81,7 +81,7 @@ namespace OCPP.Core.Server
                     connectorStatus.ChargePointId = ChargePointStatus.Id;
                     connectorStatus.ConnectorId = connectorId;
                     Logger.LogTrace("UpdateConnectorStatus => Creating new DB-ConnectorStatus: ID={0} / Connector={1}", connectorStatus.ChargePointId, connectorStatus.ConnectorId);
-                    context.Add<ConnectorStatus>(connectorStatus);
+                    dbContext.Add<ConnectorStatus>(connectorStatus);
                 }
 
                 if (!string.IsNullOrEmpty(status))
@@ -95,7 +95,7 @@ namespace OCPP.Core.Server
                     connectorStatus.LastMeter = meter.Value;
                     connectorStatus.LastMeterTime = ((meterTime.HasValue) ? meterTime.Value : DateTimeOffset.UtcNow).DateTime.ToUniversalTime();
                 }
-                context.SaveChanges();
+                dbContext.SaveChanges();
                 Logger.LogInformation("UpdateConnectorStatus => Save ConnectorStatus: ID={0} / Connector={1} / Status={2} / Meter={3}", connectorStatus.ChargePointId, connectorId, status, meter);
                 return true;
 

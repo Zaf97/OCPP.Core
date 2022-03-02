@@ -70,28 +70,27 @@ namespace OCPP.Core.Management.Controllers
                     tlvm.Timespan = 1;
                 }
 
-                using (OCPPCoreContext dbContext = new OCPPCoreContext(this.Config))
+
+                Logger.LogTrace("Transactions: Loading charge points...");
+                tlvm.ChargePoints = dbContext.ChargePoints.ToList<ChargePoint>();
+
+                Logger.LogTrace("Transactions: Loading charge points connectors...");
+                tlvm.ConnectorStatuses = dbContext.ConnectorStatuses.ToList<ConnectorStatus>();
+
+                // Count connectors for every charge point (=> naming scheme)
+                Dictionary<string, int> dictConnectorCount = new Dictionary<string, int>();
+                foreach (ConnectorStatus cs in tlvm.ConnectorStatuses)
                 {
-                    Logger.LogTrace("Transactions: Loading charge points...");
-                    tlvm.ChargePoints = dbContext.ChargePoints.ToList<ChargePoint>();
-
-                    Logger.LogTrace("Transactions: Loading charge points connectors...");
-                    tlvm.ConnectorStatuses = dbContext.ConnectorStatuses.ToList<ConnectorStatus>();
-
-                    // Count connectors for every charge point (=> naming scheme)
-                    Dictionary<string, int> dictConnectorCount = new Dictionary<string, int>();
-                    foreach (ConnectorStatus cs in tlvm.ConnectorStatuses)
+                    if (dictConnectorCount.ContainsKey(cs.ChargePointId))
                     {
-                        if (dictConnectorCount.ContainsKey(cs.ChargePointId))
-                        {
-                            // > 1 connector
-                            dictConnectorCount[cs.ChargePointId] = dictConnectorCount[cs.ChargePointId] + 1;
-                        }
-                        else
-                        {
-                            // first connector
-                            dictConnectorCount.Add(cs.ChargePointId, 1);
-                        }
+                        // > 1 connector
+                        dictConnectorCount[cs.ChargePointId] = dictConnectorCount[cs.ChargePointId] + 1;
+                    }
+                    else
+                    {
+                        // first connector
+                        dictConnectorCount.Add(cs.ChargePointId, 1);
+
                     }
 
                     // Dictionary mit ID+Connector => Name erstellen und View übergeben
@@ -112,7 +111,7 @@ namespace OCPP.Core.Management.Controllers
                     //        break;
                     //    }
                     //}
-                    
+
 
 
                     // load charge tags for name resolution
@@ -121,7 +120,7 @@ namespace OCPP.Core.Management.Controllers
                     tlvm.ChargeTags = new Dictionary<string, ChargeTag>();
                     if (chargeTags != null)
                     {
-                        foreach(ChargeTag tag in chargeTags)
+                        foreach (ChargeTag tag in chargeTags)
                         {
                             tlvm.ChargeTags.Add(tag.TagId, tag);
                         }

@@ -21,13 +21,15 @@ using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-
+using OCPP.Core.Database;
 using OCPP.Core.Management.Models;
 
 namespace OCPP.Core.Management.Controllers
 {
     public class BaseController : Controller
     {
+        public readonly OCPPCoreContext dbContext;
+
         protected UserManager UserManager { get; private set; }
 
         protected ILogger Logger { get; set; }
@@ -37,10 +39,12 @@ namespace OCPP.Core.Management.Controllers
         public BaseController(
             UserManager userManager,
             ILoggerFactory loggerFactory,
-            IConfiguration config)
+            IConfiguration config,
+            OCPPCoreContext dbContext)
         {
             UserManager = userManager;
             Config = config;
+            this.dbContext = dbContext;
         }
 
     }

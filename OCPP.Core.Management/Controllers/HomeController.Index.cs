@@ -44,7 +44,7 @@ namespace OCPP.Core.Management.Controllers
             UserManager userManager,
             IStringLocalizer<HomeController> localizer,
             ILoggerFactory loggerFactory,
-            IConfiguration config) : base(userManager, loggerFactory, config)
+            IConfiguration config, OCPPCoreContext dbContext) : base(userManager, loggerFactory, config, dbContext)
         {
             _localizer = localizer;
             Logger = loggerFactory.CreateLogger<HomeController>();
@@ -138,26 +138,24 @@ namespace OCPP.Core.Management.Controllers
                 }
                 #endregion
 
-                using (OCPPCoreContext dbContext = new OCPPCoreContext(this.Config))
-                {
-                    // List of charge point status (OCPP messages) with latest transaction (if one exist)
-                    List<ConnectorStatusView> connectorStatusViewList = dbContext.ConnectorStatusViews.ToList();
+                // List of charge point status (OCPP messages) with latest transaction (if one exist)
+                List<ConnectorStatusView> connectorStatusViewList = dbContext.ConnectorStatusViews.ToList();
 
-                    // Count connectors for every charge point (=> naming scheme)
-                    Dictionary<string, int> dictConnectorCount = new Dictionary<string, int>();
-                    foreach(ConnectorStatusView csv in connectorStatusViewList)
+                // Count connectors for every charge point (=> naming scheme)
+                Dictionary<string, int> dictConnectorCount = new Dictionary<string, int>();
+                foreach(ConnectorStatusView csv in connectorStatusViewList)
+                {
+                    if (dictConnectorCount.ContainsKey(csv.ChargePointId))
                     {
-                        if (dictConnectorCount.ContainsKey(csv.ChargePointId))
-                        {
-                            // > 1 connector
-                            dictConnectorCount[csv.ChargePointId] = dictConnectorCount[csv.ChargePointId] + 1;
-                        }
-                        else
-                        {
-                            // first connector
-                            dictConnectorCount.Add(csv.ChargePointId, 1);
-                        }
+                        // > 1 connector
+                        dictConnectorCount[csv.ChargePointId] = dictConnectorCount[csv.ChargePointId] + 1;
                     }
+                    else
+                    {
+                        // first connector
+                        dictConnectorCount.Add(csv.ChargePointId, 1);
+                    }
+
 
 
                     // List of configured charge points

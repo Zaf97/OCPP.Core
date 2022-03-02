@@ -145,21 +145,19 @@ namespace OCPP.Core.Server
 
                     if (doLog)
                     {
-                        using (OCPPCoreContext dbContext = new OCPPCoreContext(Configuration))
-                        {
-                            MessageLog msgLog = new MessageLog();
-                            msgLog.ChargePointId = chargePointId;
-                            msgLog.ConnectorId = connectorId;
-                            msgLog.LogTime = DateTime.UtcNow;
-                            msgLog.Message = message;
-                            msgLog.Result = result;
-                            msgLog.ErrorCode = errorCode;
-                            //dbContext.MessageLogs.Add(msgLog);
-                            Logger.LogTrace("MessageLog => Writing entry '{0}'", message);
-                            //dbContext.SaveChanges();
-                        }
-                        return true;
+
+                        MessageLog msgLog = new MessageLog();
+                        msgLog.ChargePointId = chargePointId;
+                        msgLog.ConnectorId = connectorId;
+                        msgLog.LogTime = DateTime.UtcNow;
+                        msgLog.Message = message;
+                        msgLog.Result = result;
+                        msgLog.ErrorCode = errorCode;
+                        //dbContext.MessageLogs.Add(msgLog);
+                        Logger.LogTrace("MessageLog => Writing entry '{0}'", message);
+                        //dbContext.SaveChanges();
                     }
+                    return true;
                 }
             }
             catch (Exception exp)

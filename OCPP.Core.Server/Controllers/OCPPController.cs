@@ -262,7 +262,7 @@ namespace OCPP.Core.Server.Controllers
                 if (_chargePointStatusDict.ContainsKey(chargepointIdentifier))
                 {
                     // exists => check status
-                    if (_chargePointStatusDict[chargepointIdentifier].WebSocket.State != WebSocketState.Open)
+                    if (_chargePointStatusDict[chargepointIdentifier].WebSocket == null || _chargePointStatusDict[chargepointIdentifier].WebSocket.State != WebSocketState.Open)
                     {
                         // Closed or aborted => remove
                         _chargePointStatusDict.Remove(chargepointIdentifier);
