@@ -10,9 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="FakesAssemblies\**" />
     <Compile Remove="logs\**" />
+    <Content Remove="FakesAssemblies\**" />
     <Content Remove="logs\**" />
+    <EmbeddedResource Remove="FakesAssemblies\**" />
     <EmbeddedResource Remove="logs\**" />
+    <None Remove="FakesAssemblies\**" />
     <None Remove="logs\**" />
   </ItemGroup>
 
@@ -27,12 +31,19 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Pages\Shared\Menus\_MainMenu.cshtml" />
+    <None Include="Pages\Shared\Menus\_OtherOptionsMenu.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Karambolo.Extensions.Logging.File" Version="3.2.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.QualityTools.Testing.Fakes" Version="16.11.230815" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.3" />
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.2.3" />
@@ -41,7 +52,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\OCPP.Core.API\OCPP.Core.API.csproj">
+      <ReferenceOutputAssembly>True</ReferenceOutputAssembly>
+    </ProjectReference>
     <ProjectReference Include="..\OCPP.Core.Database\OCPP.Core.Database.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalDesignTimeBuildInput Remove="FakesAssemblies\**" />
   </ItemGroup>
 
 

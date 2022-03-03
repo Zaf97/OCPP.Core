@@ -22,6 +22,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.WebSockets;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -57,11 +58,21 @@ namespace OCPP.Core.Server
                 .AddJsonFile("appsettings-passwords.json", optional: false)
                 .Build();
 
+            var builder = services.AddRazorPages();
+
+#if DEBUG
+            builder.AddRazorRuntimeCompilation();
+#endif
+
             services.AddControllers().AddControllersAsServices();
             services.AddSwaggerGen();
 
             services.AddScoped<OCPPMiddleware>();
             services.AddScoped<OCPPCoreContext>(provider => new(configuration));
+
+            var assembly = Assembly.Load("OCPP.Core.API");
+            services.AddControllers().AddApplicationPart(assembly).AddControllersAsServices();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -78,6 +89,11 @@ namespace OCPP.Core.Server
             {
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                app.UseExceptionHandler("/Error");
+            }
+
 
             // Set WebSocketsOptions
             var webSocketOptions = new WebSocketOptions()
@@ -93,14 +109,15 @@ namespace OCPP.Core.Server
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
 
-            app.UseRouting();
 
+            // UI
+            app.UseRouting();
+            app.UseStaticFiles();
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapRazorPages();
                 endpoints.MapControllers();
             });
-
-
         }
     }
 }

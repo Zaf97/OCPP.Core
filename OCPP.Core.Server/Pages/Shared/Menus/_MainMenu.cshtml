@@ -1,0 +1,373 @@
+﻿@using Microsoft.AspNetCore.Http.Extensions
+
+<li class="nav-item">
+    <a class="nav-link@(Context.Request.Path.Value == "/" ? " active" : "")" href="/">
+        <i class="ni ni-tv-2 text-primary"></i> Overview
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="#navbar-weekahead" data-toggle="collapse" role="button" aria-expanded="@(Context.Request.Path.Value.StartsWith("/WeekAhead/") ? "true" : "false")" aria-controls="navbar-weekahead">
+        <i class="fas fa-calendar text-primary"></i>
+        <span class="nav-link-text"> Week-Ahead Forecast</span>
+    </a>
+    <div class="@(Context.Request.Path.Value.StartsWith("/WeekAhead/") ? "show" : "collapse")" id="navbar-weekahead">
+        <ul class="nav nav-sm flex-column">
+            <li class="nav-item @(Context.Request.Path.Value == "/WeekAhead/HV/ForecastResults" ? "active" : "")">
+                <a href="@Url.Page("/WeekAhead/HV/ForecastResults")" class="nav-link">
+                    <span class="sidenav-normal"> High Voltage </span>
+                </a>
+            </li>
+            <li class="nav-item @(Context.Request.Path.Value == "/WeekAhead/MV/ForecastResults" ? "active" : "")">
+                <a href="@Url.Page("/WeekAhead/MV/ForecastResults")" class="nav-link">
+                    <span class="sidenav-normal"> Medium Voltage </span>
+                </a>
+            </li>
+            <li class="nav-item @(Context.Request.Path.Value == "/WeekAhead/LV/ForecastResults" ? "active" : "")">
+                <a href="@Url.Page("/WeekAhead/LV/ForecastResults")" class="nav-link">
+                    <span class="sidenav-normal"> Low Voltage </span>
+                </a>
+            </li>
+
+            <li class="nav-item @(Context.Request.Path.Value.StartsWith("/TotalForecasts?time=WeekAhead") ? "active" : "")">
+                <a href="/TotalForecasts?time=WeekAhead" class="nav-link">
+                    <span class="sidenav-normal"> Total Forecast </span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="#navbar-dayahead" data-toggle="collapse" role="button"
+       aria-expanded="@(Context.Request.Path.Value.StartsWith("/DayAhead/") && !Context.Request.GetEncodedPathAndQuery().EndsWith("?Mode=1") ? "true" : "false")" aria-controls="navbar-dayahead">
+        <i class="fas fa-calendar-alt text-primary"></i> Day-ahead forecast
+    </a>
+    <div class="@(Context.Request.Path.Value.StartsWith("/DayAhead/") && !Context.Request.GetEncodedPathAndQuery().Contains("?Mode=1") ? "show" : "collapse")" id="navbar-dayahead">
+        <ul class="nav nav-sm flex-column">
+            <li class="nav-item @(Context.Request.Path.Value == "/DayAhead/HV/ForecastResults" && !Context.Request.GetEncodedPathAndQuery().EndsWith("?Mode=1") ? "active" : "")">
+                <a href="@Url.Page("/DayAhead/HV/ForecastResults")" class="nav-link">
+                    <span class="sidenav-normal"> High Voltage </span>
+                </a>
+            </li>
+            <li class="nav-item @(Context.Request.Path.Value == "/DayAhead/MV/ForecastResults" && !Context.Request.GetEncodedPathAndQuery().EndsWith("?Mode=1") ? "active" : "")">
+                <a href="@Url.Page("/DayAhead/MV/ForecastResults")" class="nav-link">
+                    <span class="sidenav-normal"> Medium Voltage </span>
+                </a>
+            </li>
+            <li class="nav-item @(Context.Request.Path.Value == "/DayAhead/LV/ForecastResults" ? "active" : "")">
+                <a href="@Url.Page("/DayAhead/LV/ForecastResults")" class="nav-link">
+                    <span class="sidenav-normal"> Low Voltage </span>
+                </a>
+            </li>
+            <li class="nav-item @(Context.Request.Path.Value.StartsWith("/TotalForecasts?time=DayAhead") ? "active" : "")">
+                <a href="/TotalForecasts?time=DayAhead" class="nav-link">
+                    <span class="sidenav-normal"> Total Forecast </span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</li>
+<li class="nav-item">
+    <a class="nav-link @(Context.Request.Path.Value.StartsWith("/IntraDay/") || Context.Request.GetEncodedPathAndQuery().EndsWith("Mode=1") ? "active" : "")" href="#navbar-intraday" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="navbar-intraday">
+        <i class="fas fa-hourglass-start text-primary"></i>Intra-Day Forecast
+    </a>
+    <div class="@(Context.Request.Path.Value.StartsWith("/IntraDay/") || Context.Request.GetEncodedPathAndQuery().Contains("?Mode=1") ? "show" : "collapse")" id="navbar-intraday">
+        <ul class="nav nav-sm flex-column">
+            <li class="nav-item @(Context.Request.Path.Value == "/IntraDay/HV/ForecastResults" ? "active" : "")">
+                <a href="/DayAhead/HV/ForecastResults?Mode=1" class="nav-link">
+                    <span class="sidenav-normal"> High Voltage (for LIDA3) </span>
+                </a>
+            </li>
+            <li class="nav-item @(Context.Request.Path.Value == "/IntraDay/MV/ForecastResults" ? "active" : "")">
+                <a href="/DayAhead/MV/ForecastResults?Mode=1" class="nav-link">
+                    <span class="sidenav-normal"> Medium Voltage (for LIDA3) </span>
+                </a>
+            </li>
+            <li class="nav-item @(Context.Request.Path.Value == "/IntraDay/LV/ForecastResults" ? "active" : "")">
+                <a href="@Url.Page("/IntraDay/LV/ForecastResults")" class="nav-link @(Context.Request.Path.Value == "/IntraDay/LV/ForecastResults" ? "active" : "")">
+                    <span class="sidenav-normal"> Low Voltage </span>
+                </a>
+            </li>
+            <li class="nav-item @(Context.Request.Path.Value.StartsWith("/TotalForecasts?time=Intraday") ? "active" : "")">
+                <a href="/TotalForecasts?time=Intraday" class="nav-link">
+                    <span class="sidenav-normal"> Total Forecast </span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</li>
+<li class="nav-item">
+    <a class="nav-link @(Context.Request.Path.Value.StartsWith("/Reports/") ? "active" : "")" href="#navbar-reportsdata" data-toggle="collapse" role="button" aria-expanded="@(Context.Request.Path.Value.StartsWith("/Reports/") ? "true" : "false")" aria-controls="navbar-reportsdata">
+        <i class="ni ni-laptop text-primary"></i> Reports
+    </a>
+    <div class="@(Context.Request.Path.Value.StartsWith("/Reports/") ? "show" : "collapse")" id="navbar-reportsdata">
+        <ul class="nav nav-sm flex-column">
+            <li class="nav-item @(Context.Request.Path.Value == "/Reports/ForecastAccuracyReport" ? "active" : "")">
+                <a href="@Url.Page("/Reports/ForecastAccuracyReport")" class="nav-link">
+                    <span class="sidenav-normal"> Forecast Accuracy </span>
+                </a>
+            </li>
+            <li class="nav-item @(Context.Request.Path.Value == "/Reports/SystemVsSupplierConsumptionReport" ? "active" : "")">
+                <a href="@Url.Page("/Reports/SystemVsSupplierConsumptionReport")" class="nav-link">
+                    <span class="sidenav-normal"> Ex-post Estimation of LV Consumption </span>
+                </a>
+            </li>
+            <li class="nav-item @(Context.Request.Path.Value == "/Reports/LeadTimeReport" ? "active" : "")">
+                <a href="@Url.Page("/Reports/LeadTimeReport")" class="nav-link">
+                    <span class="sidenav-normal"> Lead-Time Forecast Accuracy </span>
+                </a>
+            </li>
+            <li class="nav-item @(Context.Request.Path.Value == "/Reports/NeuralNetworkTrainingReport" ? "active" : "")">
+                <a href="@Url.Page("/Reports/NeuralNetworkTrainingReport")" class="nav-link">
+                    <span class="sidenav-normal"> Neural Network Training </span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</li>
+
+<li class="nav-item">
+    <a class="nav-link @(Context.Request.Path.Value.StartsWith("/LongTerm/") ? "active" : "")" href="#navbar-longterm" data-toggle="collapse" role="button" aria-expanded="@(Context.Request.Path.Value.StartsWith("/LongTerm/") ? "true" : "false")" aria-controls="navbar-longterm">
+        <i class="ni ni-watch-time text-primary"></i> Long-Term Forecast
+    </a>
+    <div class="@(Context.Request.Path.Value.StartsWith("/LongTerm/") ? "show" : "collapse")" id="navbar-longterm">
+        <ul class="nav nav-sm flex-column">
+            <li class="nav-item @(Context.Request.Path.Value == "/LongTerm/ExecutionOverview/0" ? "active" : "")">
+                <a href="/LongTerm/ExecutionOverview/0" class="nav-link">
+                    <span class="sidenav-normal"> Low Voltage </span>
+                </a>
+            </li>
+            <li class="nav-item @(Context.Request.Path.Value == "/LongTerm/ExecutionOverview/1" ? "active" : "")">
+                <a href="/LongTerm/ExecutionOverview/1" class="nav-link">
+                    <span class="sidenav-normal"> Medium Voltage </span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</li>
+
+<li class="nav-item">
+    <a class="nav-link @(Context.Request.Path.Value.StartsWith("/HistoricalData/") ? "active" : "")" href="#navbar-historicaldata" data-toggle="collapse" role="button" aria-expanded="@(Context.Request.Path.Value.StartsWith("/HistoricalData/") ? "true" : "false")" aria-controls="navbar-historicaldata">
+        <i class="fas fa-history text-primary"></i> Historical Data
+    </a>
+    <div class="@(Context.Request.Path.Value.StartsWith("/HistoricalData/") ? "show" : "collapse")" id="navbar-historicaldata">
+        <ul class="nav nav-sm flex-column">
+            <li class="nav-item @(Context.Request.Path.Value.StartsWith("/HistoricalData/AdmieISPRequirements") ? "active" : "")">
+                <a class="nav-link" href="#navbar-ISP-requirements" data-toggle="collapse" role="button" aria-expanded="@(Context.Request.Path.Value.StartsWith("/HistoricalData/AdmieISPRequirements") ? "true" : "false")" aria-controls="navbar-ISP-requirements">
+                    <span class="nav-link-text"> ADMIE ISP Requirements </span>
+                </a>
+                <div class="@(Context.Request.Path.Value.StartsWith("/HistoricalData/AdmieISPRequirements") ? "show" : "collapse")" id="navbar-ISP-requirements">
+                    <ul class="nav nav-sm flex-column">
+                        <li class="nav-item @(Context.Request.Path.Value == "/HistoricalData/AdmieISPRequirements/LoadForecastAtTD" ? "active" : "")">
+                            <a href="@Url.Page("/HistoricalData/AdmieISPRequirements/LoadForecastAtTD")" class="nav-link">
+                                <span class="sidenav-normal"> Load Forecast </span>
+                            </a>
+                        </li>
+                        <li class="nav-item @(Context.Request.Path.Value == "/HistoricalData/AdmieISPRequirements/LoadForecastAtTDDayAhead" ? "active" : "")">
+                            <a href="@Url.Page("/HistoricalData/AdmieISPRequirements/LoadForecastAtTDDayAhead")" class="nav-link">
+                                <span class="sidenav-normal"> Load Forecast (Day Ahead) </span>
+                            </a>
+                        </li>
+                        <li class="nav-item @(Context.Request.Path.Value == "/HistoricalData/AdmieISPRequirements/DAPEEPnetworkRESforecast" ? "active" : "")">
+                            <a href="@Url.Page("/HistoricalData/AdmieISPRequirements/DAPEEPnetworkRESforecast")" class="nav-link">
+                                <span class="sidenav-normal"> Total RES forecast </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item @(Context.Request.Path.Value.StartsWith("/HistoricalData/AdmieDASRequirements") ? "active" : "")">
+                <a class="nav-link" href="#navbar-DAS-requirements" data-toggle="collapse" role="button" aria-expanded="@(Context.Request.Path.Value.StartsWith("/HistoricalData/AdmieDASRequirements") ? "true" : "false")" aria-controls="navbar-DAS-requirements">
+                    <span class="nav-link-text"> ADMIE DAS Requirements </span>
+                </a>
+                <div class="@(Context.Request.Path.Value.StartsWith("/HistoricalData/AdmieDASRequirements") ? "show" : "collapse")" id="navbar-DAS-requirements">
+                    <ul class="nav nav-sm flex-column">
+                        <li class="nav-item @(Context.Request.Path.Value == "/HistoricalData/AdmieDASRequirements/LoadForecastAtTD" ? "active" : "")">
+                            <a href="@Url.Page("/HistoricalData/AdmieDASRequirements/LoadForecastAtTD")" class="nav-link">
+                                <span class="sidenav-normal"> Load Forecast At TD </span>
+                            </a>
+                        </li>
+                        <li class="nav-item @(Context.Request.Path.Value == "/HistoricalData/AdmieDASRequirements/DAPEEPnetworkRESforecast" ? "active" : "")">
+                            <a href="@Url.Page("/HistoricalData/AdmieDASRequirements/DAPEEPnetworkRESforecast")" class="nav-link">
+                                <span class="sidenav-normal"> Total RES forecast </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item @(Context.Request.Path.Value.StartsWith("/HistoricalData/EntsoeTransaparencyPlatform") ? "active" : "")">
+                <a class="nav-link" href="#navbar-Etsoe" data-toggle="collapse" role="button" aria-expanded="@(Context.Request.Path.Value.StartsWith("/HistoricalData/EntsoeTransaparencyPlatform") ? "true" : "false")" aria-controls="navbar-Etsoe">
+                    <span class="nav-link-text"> ENTSO-E Transaparency Platform </span>
+                </a>
+                <div class="@(Context.Request.Path.Value.StartsWith("/HistoricalData/EntsoeTransaparencyPlatform/") ? "show" : "collapse")" id="navbar-Etsoe">
+                    <ul class="nav nav-sm flex-column">
+                        <li class="nav-item @(Context.Request.Path.Value == "/HistoricalData/EntsoeTransaparencyPlatform/SystemLoadForecastENTSOE" ? "active" : "")">
+                            <a href="@Url.Page("/HistoricalData/EntsoeTransaparencyPlatform/SystemLoadForecastENTSOE")" class="nav-link">
+                                <span class="sidenav-normal"> System Load Forecast ENTSOE </span>
+                            </a>
+                        </li>
+                        <li class="nav-item @(Context.Request.Path.Value == "/HistoricalData/EntsoeTransaparencyPlatform/ActualSystemLoadENTSOE" ? "active" : "")">
+                            <a href="@Url.Page("/HistoricalData/EntsoeTransaparencyPlatform/ActualSystemLoadENTSOE")" class="nav-link">
+                                <span class="sidenav-normal"> Actual System Load ENTSOE </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item @(Context.Request.Path.Value == "/HistoricalData/AdmieWeekAheadForecast" ? "active" : "")">
+                <a href="@Url.Page("/HistoricalData/AdmieWeekAheadForecast")" class="nav-link  @(Context.Request.Path.Value == "/HistoricalData/AdmieWeekAheadForecast" ? "active" : "")">
+                    <span class="sidenav-normal">
+                        ADMIE week-ahead forecasts
+                    </span>
+                </a>
+            </li>
+            <li class="nav-item @(Context.Request.Path.Value == "/HistoricalData/AdmieResMvInjections" ? "active" : "")">
+                <a href="@Url.Page("/HistoricalData/AdmieResMvInjections")" class="nav-link  @(Context.Request.Path.Value == "/HistoricalData/AdmieResMvInjections" ? "active" : "")">
+                    <span class="sidenav-normal">
+                        Admie RES MV Injections
+                    </span>
+                </a>
+            </li>
+            <li class="nav-item @(Context.Request.Path.Value == "/HistoricalData/ExternalSourcesRESForecasts" ? "active" : "")">
+                <a href="@Url.Page("/HistoricalData/NetworkResforecast")" class="nav-link  @(Context.Request.Path.Value == "/HistoricalData/ExternalSourcesRESForecasts" ? "active" : "")">
+                    <span class="sidenav-normal">
+                        External sources RES forecasts
+                    </span>
+                </a>
+            </li>
+            <li class="nav-item @(Context.Request.Path.Value == "/HistoricalData/HvCustomers" ? "active" : "")">
+                <a class="nav-link" href="#navbar-HV-conumers" data-toggle="collapse" role="button" aria-expanded="@(Context.Request.Path.Value.StartsWith("/HistoricalData/HVCustomers") ? "true" : "false")" aria-controls="navbar-HV-conumers">
+                    <span class="nav-link-text"> High Voltage Consumers</span>
+                </a>
+                <div class="@(Context.Request.Path.Value.StartsWith("/HistoricalData/HVCustomers") ? "show" : "collapse")" id="navbar-HV-conumers">
+                    <ul class="nav nav-sm flex-column">
+                        <li class="nav-item @(Context.Request.Path.Value == "/HistoricalData/HVCustomers/ElpedisonHVCustomersData" ? "active" : "")">
+                            <a href="@Url.Page("/HistoricalData/HVCustomers/ElpedisonHVCustomersData")" class="nav-link">
+                                <span class="sidenav-normal"> Elpedison HV Customers Data </span>
+                            </a>
+                        </li>
+                        <li class="nav-item @(Context.Request.Path.Value == "/HistoricalData/HVCustomers/ElpedisonHVCustomersCertifiedMeasurements" ? "active" : "")">
+                            <a href="@Url.Page("/HistoricalData/HVCustomers/ElpedisonHVCustomersCertifiedMeasurements")" class="nav-link">
+                                <span class="sidenav-normal"> Elpedison HV Customers' Certified Measurements </span>
+                            </a>
+                        </li>
+                        <li class="nav-item @(Context.Request.Path.Value == "/HistoricalData/HVCustomers/ElpedisonHVCustomersNonCertifiedMeasurements" ? "active" : "")">
+                            <a href="@Url.Page("/HistoricalData/HVCustomers/ElpedisonHVCustomersNonCertifiedMeasurements")" class="nav-link">
+                                <span class="sidenav-normal"> Elpedison HV Customers Non-Certified Measurements </span>
+                            </a>
+                        </li>
+                        <li class="nav-item @(Context.Request.Path.Value == "/HistoricalData/HVCustomers/HVConsumptionMMSSettlementReports" ? "active" : "")">
+                            <a href="@Url.Page("/HistoricalData/HVCustomers/HVConsumptionMMSSettlementReports")" class="nav-link">
+                                <span class="sidenav-normal"> Elpedison HV customers' consumption (MMS settlement reports) </span>
+                            </a>
+                        </li>
+                        <li class="nav-item @(Context.Request.Path.Value == "/HistoricalData/HVCustomers/HvconsumerActualLoad" ? "active" : "")">
+                            <a href="@Url.Page("/HistoricalData/HVCustomers/HvconsumerActualLoad")" class="nav-link">
+                                <span class="sidenav-normal"> All HV customers' measurements (SCADA report) </span>
+                            </a>
+                        </li>
+                        <li class="nav-item @(Context.Request.Path.Value == "/HistoricalData/HVCustomers/ActualHVTotalConsumption" ? "active" : "")">
+                            <a href="@Url.Page("/HistoricalData/HVCustomers/ActualHVTotalConsumption")" class="nav-link">
+                                <span class="sidenav-normal"> Total HV Consumption (Settlement Reports) </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item @(Context.Request.Path.Value == "/HistoricalData/MVCustomers" ? "active" : "")">
+                <a class="nav-link" href="#navbar-MV-conumers" data-toggle="collapse" role="button" aria-expanded="@(Context.Request.Path.Value.StartsWith("/HistoricalData/MVCustomers") ? "true" : "false")" aria-controls="navbar-MV-conumers">
+                    <span class="nav-link-text"> Medium Voltage Consumers</span>
+                </a>
+                <div class="@(Context.Request.Path.Value.StartsWith("/HistoricalData/MVCustomers") ? "show" : "collapse")" id="navbar-MV-conumers">
+                    <ul class="nav nav-sm flex-column">
+                        <li class="nav-item @(Context.Request.Path.Value == "/HistoricalData/MVCustomers/ElpedisonMVCustomersData" ? "active" : "")">
+                            <a href="@Url.Page("/HistoricalData/MVCustomers/ElpedisonMVCustomersData")" class="nav-link">
+                                <span class="sidenav-normal"> Elpedison MV Customers Data </span>
+                            </a>
+                        </li>
+                        <li class="nav-item @(Context.Request.Path.Value == "/WeekAhead/MVCustomers/ElpedisonMVCustomersCertifiedMeasurements" ? "active" : "")">
+                            <a href="@Url.Page("/HistoricalData/MVCustomers/ElpedisonMVCustomersCertifiedMeasurements")" class="nav-link">
+                                <span class="sidenav-normal"> Elpedison MV Customers' Certified Measurements </span>
+                            </a>
+                        </li>
+                        <li class="nav-item @(Context.Request.Path.Value == "/HistoricalData/MVCustomers/ElpedisonMVCustomersNonCertifiedMeasurements" ? "active" : "")">
+                            <a href="@Url.Page("/HistoricalData/MVCustomers/ElpedisonMVCustomersNonCertifiedMeasurements")" class="nav-link">
+                                <span class="sidenav-normal"> Elpedison MV Customers Non-Certified Measurements </span>
+                            </a>
+                        </li>
+                        <li class="nav-item @(Context.Request.Path.Value == "/HistoricalData/MVCustomers/MVConsumptionMMSSettlementReport" ? "active" : "")">
+                            <a href="@Url.Page("/HistoricalData/MVCustomers/MVConsumptionMMSSettlementReport")" class="nav-link">
+                                <span class="sidenav-normal"> Elpedison MV customers' consumption (MMS settlement reports) </span>
+                            </a>
+                        </li>
+                        <li class="nav-item @(Context.Request.Path.Value == "/HistoricalData/MVCustomers/MvconsumersTotalNonCertMeasurements" ? "active" : "")">
+                            <a href="@Url.Page("/HistoricalData/MVCustomers/MvconsumersTotalNonCertMeasurements")" class="nav-link">
+                                <span class="sidenav-normal"> All MV customers' measurements (IRIS report) </span>
+                            </a>
+                        </li>
+                        <li class="nav-item @(Context.Request.Path.Value == "/HistoricalData/MVCustomers/ActualMVTotalConsumption" ? "active" : "")">
+                            <a href="@Url.Page("/HistoricalData/MVCustomers/ActualMVTotalConsumption")" class="nav-link">
+                                <span class="sidenav-normal"> Total MV Consumption (Settlement Reports) </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item @(Context.Request.Path.Value == "/HistoricalData/LVCustomers" ? "active" : "")">
+                <a class="nav-link" href="#navbar-LV-conumers" data-toggle="collapse" role="button" aria-expanded="@(Context.Request.Path.Value.StartsWith("/HistoricalData/LVCustomers") ? "true" : "false")" aria-controls="navbar-LV-conumers">
+                    <span class="nav-link-text"> Low Voltage Consumers</span>
+                </a>
+                <div class="@(Context.Request.Path.Value.StartsWith("/HistoricalData/LVCustomers") ? "show" : "collapse")" id="navbar-LV-conumers">
+                    <ul class="nav nav-sm flex-column">
+                        <li class="nav-item @(Context.Request.Path.Value == "/HistoricalData/LVCustomers/ExAnteRepresentationPercentage" ? "active" : "")">
+                            <a href="@Url.Page("/HistoricalData/LVCustomers/ExAnteRepresentationPercentage")" class="nav-link">
+                                <span class="sidenav-normal"> Ex-ante Representation Percentage </span>
+                            </a>
+                        </li>
+                        <li class="nav-item @(Context.Request.Path.Value == "/HistoricalData/LVCustomers/ExAnteRepresentationQuantitiesPerZone" ? "active" : "")">
+                            <a href="@Url.Page("/HistoricalData/LVCustomers/ExAnteRepresentationQuantitiesPerZone")" class="nav-link">
+                                <span class="sidenav-normal"> Ex-ante Representation Quantities per Zone </span>
+                            </a>
+                        </li>
+                        <li class="nav-item @(Context.Request.Path.Value == "/HistoricalData/LVCustomers/LVConsumptionMMSSettlementReports" ? "active" : "")">
+                            <a href="@Url.Page("/HistoricalData/LVCustomers/LVConsumptionMMSSettlementReports")" class="nav-link">
+                                <span class="sidenav-normal"> Elpedison LV customers' consumption (MMS settlement reports) </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+            <li class="nav-item @(Context.Request.Path.Value == "/HistoricalData/LossFactors" ? "active" : "")">
+                <a href="@Url.Page("/HistoricalData/LossFactors")" class="nav-link  @(Context.Request.Path.Value == "/HistoricalData/LossFactors" ? "active" : "")">
+                    <span class="sidenav-normal">
+                        Loss Factors
+                    </span>
+                </a>
+            </li>
+
+            <li class="nav-item @(Context.Request.Path.Value == "/HistoricalData/TdBoundaryInjection" ? "active" : "")">
+                <a href="@Url.Page("/HistoricalData/TdBoundaryInjection")" class="nav-link  @(Context.Request.Path.Value == "/HistoricalData/TdBoundaryInjection" ? "active" : "")">
+                    <span class="sidenav-normal">
+                        TD Boundary Injection
+                    </span>
+                </a>
+            </li>
+
+            <li class="nav-item @(Context.Request.Path.Value == "/HistoricalData/ActualNetworkResProduction" ? "active" : "")">
+                <a href="@Url.Page("/HistoricalData/ActualNetworkResProduction")" class="nav-link  @(Context.Request.Path.Value == "/HistoricalData/ActualNetworkResProduction" ? "active" : "")">
+                    <span class="sidenav-normal">
+                        Actual Total Network RES Production
+                    </span>
+                </a>
+            </li>
+
+            <li class="nav-item @(Context.Request.Path.Value == "/HistoricalData/DateDimension" ? "active" : "")">
+                <a href="@Url.Page("/HistoricalData/DateDimension")" class="nav-link  @(Context.Request.Path.Value == "/HistoricalData/DateDimension" ? "active" : "")">
+                    <span class="sidenav-normal">
+                        Calendar Helper
+                    </span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</li>

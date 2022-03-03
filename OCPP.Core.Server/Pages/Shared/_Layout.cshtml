@@ -1,0 +1,20 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <partial name="_PageHeadElement" />
+    @RenderSection("Styles", required: false)
+    @RenderSection("HeadScripts", required: false)
+</head>
+
+<body class="bg-gray-100">
+    <div class="min-height-300 bg-primary position-absolute w-100"></div>
+
+    <div class="container-fluid py-4">
+        <!-- Page content -->
+        @RenderBody()
+        <partial name="_Footer" />
+    </div>
+    <partial name="_ThemeScripts" />
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

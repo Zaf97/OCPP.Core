@@ -82,6 +82,8 @@ namespace OCPP.Core.Management
                 .AddJsonFile("appsettings-passwords.json", optional: false)
                 .Build();
             services.AddScoped<OCPPCoreContext>(provider => new(configuration));
+
+            services.AddControllersWithViews().AddRazorRuntimeCompilation();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
