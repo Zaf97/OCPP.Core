@@ -15,6 +15,8 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using OCPP.Core.Server.Messages_OCPP16;
+using Microsoft.AspNetCore.SignalR;
+using OCPP.Core.Server.Hubs;
 
 namespace OCPP.Core.Server.Controllers
 {
@@ -25,6 +27,7 @@ namespace OCPP.Core.Server.Controllers
         private readonly ILoggerFactory logFactory;
         private readonly OCPPCoreContext dbContext;
         private readonly OCPPMiddleware oCPPMiddleware;
+        private readonly IHubContext<OCPPTransactionsHub> dataHub;
         private readonly ILogger _logger;
 
         // Supported OCPP protocols (in order)
@@ -35,11 +38,12 @@ namespace OCPP.Core.Server.Controllers
         // Dictionary with status objects for each charge point
         public static Dictionary<int, ChargePointStatus> _chargePointStatusDict = new Dictionary<int, ChargePointStatus>();
 
-        public OCPPController(IConfiguration config, ILoggerFactory logFactory, OCPPCoreContext dbContext, OCPPMiddleware oCPPMiddleware)
+        public OCPPController(IConfiguration config, ILoggerFactory logFactory, OCPPCoreContext dbContext, OCPPMiddleware oCPPMiddleware, IHubContext<OCPPTransactionsHub> dataHub)
         {
             this.logFactory = logFactory;
             this.dbContext = dbContext;
             this.oCPPMiddleware = oCPPMiddleware;
+            this.dataHub = dataHub;
             _logger = logFactory.CreateLogger("OCPPMiddleware");
         }
 
@@ -47,6 +51,7 @@ namespace OCPP.Core.Server.Controllers
         public async Task Get(int connectorId)
         {
             var context = HttpContext;
+            context.Request.Headers.Date = new(DateTime.UtcNow.ToString("yyyy-MM-ddThh:mm:ss.fffZ"));
             ChargePointStatus chargePointStatus = new();
             _logger.LogInformation($"OCPPMiddleware => Connection request with chargepoint identifier = '{connectorId}'");
 
@@ -217,24 +222,14 @@ namespace OCPP.Core.Server.Controllers
             }
         }
 
-        internal async Task GetStatus(HttpContext context)
+        internal async Task<List<ChargePointStatus>> GetStatus()
         {
-            try
+            List<ChargePointStatus> statusList = new List<ChargePointStatus>();
+            foreach (ChargePointStatus status in _chargePointStatusDict.Values)
             {
-                List<ChargePointStatus> statusList = new List<ChargePointStatus>();
-                foreach (ChargePointStatus status in _chargePointStatusDict.Values)
-                {
-                    statusList.Add(status);
-                }
-                string jsonStatus = JsonConvert.SerializeObject(statusList);
-                context.Response.ContentType = "application/json";
-                await context.Response.WriteAsync(jsonStatus);
+                statusList.Add(status);
             }
-            catch (Exception exp)
-            {
-                _logger.LogError(exp, $"OCPPMiddleware => Error: {exp.Message}");
-                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            }
+            return statusList; 
         }
 
         private static string GetSupportedProtocol(HttpContext context)
@@ -285,12 +280,12 @@ namespace OCPP.Core.Server.Controllers
             if (subProtocol == Protocol_OCPP20)
             {
                 // OCPP V2.0
-                await oCPPMiddleware.Receive20(chargePointStatus, context);
+                await oCPPMiddleware.Receive20(chargePointStatus, context, dataHub);
             }
             else
             {
                 // OCPP V1.6
-                await oCPPMiddleware.Receive16(chargePointStatus, context);
+                await oCPPMiddleware.Receive16(chargePointStatus, context, dataHub);
             }
         }
     }

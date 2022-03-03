@@ -19,18 +19,20 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OCPP.Core.Database;
 using OCPP.Core.Server.Messages_OCPP16;
+using OCPP.Core.Server.Models;
 
 namespace OCPP.Core.Server
 {
     public partial class ControllerOCPP16
     {
-        public string HandleStopTransaction(OCPPMessage msgIn, OCPPMessage msgOut)
+        public async Task<string> HandleStopTransactionAsync(OCPPMessage msgIn, OCPPMessage msgOut)
         {
             string errorCode = null;
             StopTransactionResponse stopTransactionResponse = new StopTransactionResponse();
@@ -191,6 +193,16 @@ namespace OCPP.Core.Server
             }
 
             WriteMessageLog(ChargePointStatus?.Id, null, msgIn.Action, stopTransactionResponse.IdTagInfo?.Status.ToString(), errorCode);
+            var debug = new DebugLog()
+            {
+                Action = msgIn.Action,
+                MessageType = int.Parse(msgIn.MessageType),
+                ReguestJsonPayload = msgIn.JsonPayload,
+                RequestTime = DateTime.ParseExact(msgIn.DateTime, "yyyy-MM-ddThh:mm:ss.fffZ", CultureInfo.InvariantCulture),
+                ResponseJsonPayload = msgOut.JsonPayload,
+                ResponseTime = DateTime.ParseExact(DateTime.UtcNow.ToString("yyyy-MM-ddThh:mm:ss.fffZ"), "yyyy-MM-ddThh:mm:ss.fffZ", CultureInfo.InvariantCulture)
+            };
+            await dataHub.Clients.All.SendCoreAsync("OCPPTransaction", new object[] { debug });
             return errorCode;
         }
     }

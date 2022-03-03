@@ -21,9 +21,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OCPP.Core.Database;
+using OCPP.Core.Server.Hubs;
 using OCPP.Core.Server.Messages_OCPP16;
 
 namespace OCPP.Core.Server
@@ -31,6 +33,7 @@ namespace OCPP.Core.Server
     public partial class ControllerBase
     {
         public readonly OCPPCoreContext dbContext;
+        protected readonly IHubContext<OCPPTransactionsHub> dataHub;
 
         /// <summary>
         /// Configuration context for reading app settings
@@ -50,10 +53,11 @@ namespace OCPP.Core.Server
         /// <summary>
         /// Constructor
         /// </summary>
-        public ControllerBase(IConfiguration config, ILoggerFactory loggerFactory, ChargePointStatus chargePointStatus, OCPPCoreContext context)
+        public ControllerBase(IConfiguration config, ILoggerFactory loggerFactory, ChargePointStatus chargePointStatus, OCPPCoreContext context, IHubContext<OCPPTransactionsHub> dataHub)
         {
             Configuration = config;
             this.dbContext = context;
+            this.dataHub = dataHub;
             if (chargePointStatus != null)
             {
                 ChargePointStatus = chargePointStatus;

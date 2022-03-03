@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using OCPP.Core.Server.Hubs;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,10 +21,10 @@ namespace OCPP.Core.Server
         /// <summary>
         /// Waits for new OCPP V1.6 messages on the open websocket connection and delegates processing to a controller
         /// </summary>
-        public async Task Receive16(ChargePointStatus chargePointStatus, HttpContext context)
+        public async Task Receive16(ChargePointStatus chargePointStatus, HttpContext context, IHubContext<OCPPTransactionsHub> dataHub)
         {
             ILogger logger = _logFactory.CreateLogger("OCPPMiddleware.OCPP16");
-            ControllerOCPP16 controller16 = new ControllerOCPP16(_configuration, _logFactory, chargePointStatus, this.context);
+            ControllerOCPP16 controller16 = new ControllerOCPP16(_configuration, _logFactory, chargePointStatus, this.context, dataHub);
 
             byte[] buffer = new byte[1024 * 4];
             MemoryStream memStream = new MemoryStream(buffer.Length);
@@ -68,7 +70,7 @@ namespace OCPP.Core.Server
                             string jsonPaylod = match.Groups[4].Value;
                             logger.LogInformation("OCPPMiddleware.Receive16 => OCPP-Message: Type={0} / ID={1} / Action={2})", messageTypeId, uniqueId, action);
 
-                            OCPPMessage msgIn = new OCPPMessage(messageTypeId, uniqueId, action, jsonPaylod);
+                            OCPPMessage msgIn = new OCPPMessage(messageTypeId, uniqueId, action, jsonPaylod, context.Request.Headers.Date.First());
                             if (msgIn.MessageType == "2")
                             {
                                 // Request from chargepoint to OCPP server

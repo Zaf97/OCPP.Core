@@ -37,6 +37,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OCPP.Core.Database;
+using OCPP.Core.Server.Hubs;
 
 namespace OCPP.Core.Server
 {
@@ -63,6 +64,8 @@ namespace OCPP.Core.Server
 #if DEBUG
             builder.AddRazorRuntimeCompilation();
 #endif
+
+            services.AddSignalR();
 
             services.AddControllers().AddControllersAsServices();
             services.AddSwaggerGen();
@@ -101,6 +104,7 @@ namespace OCPP.Core.Server
                 KeepAliveInterval = TimeSpan.FromSeconds(120),
             };
 
+            app.UseCors();
             app.UseWebSockets(webSocketOptions);
 
             app.UseSwagger();
@@ -117,6 +121,7 @@ namespace OCPP.Core.Server
             {
                 endpoints.MapRazorPages();
                 endpoints.MapControllers();
+                endpoints.MapHub<OCPPTransactionsHub>("/OCPPTransactionsHub");
             });
         }
     }

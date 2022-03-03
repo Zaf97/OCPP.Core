@@ -207,7 +207,20 @@ namespace OCPP.Core.Server.Controllers
         [HttpGet("/API/Status")]
         public async Task GetStatus()
         {
-            await oCPPController.GetStatus(HttpContext);
+            var context = HttpContext;
+            try
+            { 
+                var statusList = await oCPPController.GetStatus();
+                string jsonStatus = JsonConvert.SerializeObject(statusList);
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsync(jsonStatus);
+            }
+            catch (Exception exp)
+            {
+                _logger.LogError(exp, $"OCPPMiddleware => Error: {exp.Message}");
+                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            }
+
         }
     }
 }

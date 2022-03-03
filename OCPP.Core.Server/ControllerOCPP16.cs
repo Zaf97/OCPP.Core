@@ -21,25 +21,25 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OCPP.Core.Database;
+using OCPP.Core.Server.Hubs;
 using OCPP.Core.Server.Messages_OCPP16;
 
 namespace OCPP.Core.Server
 {
     public partial class ControllerOCPP16 : ControllerBase
     {
-        private readonly OCPPCoreContext dbContext;
 
         /// <summary>
         /// Constructor
         /// </summary>
-        public ControllerOCPP16(IConfiguration config, ILoggerFactory loggerFactory, ChargePointStatus chargePointStatus, OCPPCoreContext dbContext) :
-            base(config, loggerFactory, chargePointStatus, dbContext)
+        public ControllerOCPP16(IConfiguration config, ILoggerFactory loggerFactory, ChargePointStatus chargePointStatus, OCPPCoreContext dbContext, IHubContext<OCPPTransactionsHub> dataHub) :
+            base(config, loggerFactory, chargePointStatus, dbContext, dataHub)
         {
             Logger = loggerFactory.CreateLogger(typeof(ControllerOCPP16));
-            this.dbContext = dbContext;
         }
 
         /// <summary>
@@ -56,11 +56,11 @@ namespace OCPP.Core.Server
             switch (msgIn.Action)
             {
                 case "BootNotification":
-                    errorCode = HandleBootNotification(msgIn, msgOut);
+                    errorCode = HandleBootNotificationAsync(msgIn, msgOut).Result;
                     break;
 
                 case "Heartbeat":
-                    errorCode = HandleHeartBeat(msgIn, msgOut);
+                    errorCode = HandleHeartBeatAsync(msgIn, msgOut).Result;
                     break;
 
                 case "Authorize":
@@ -68,19 +68,19 @@ namespace OCPP.Core.Server
                     break;
 
                 case "StartTransaction":
-                    errorCode = HandleStartTransaction(msgIn, msgOut);
+                    errorCode = HandleStartTransactionAsync(msgIn, msgOut).Result;
                     break;
 
                 case "StopTransaction":
-                    errorCode = HandleStopTransaction(msgIn, msgOut);
+                    errorCode = HandleStopTransactionAsync(msgIn, msgOut).Result;
                     break;
 
                 case "MeterValues":
-                    errorCode = HandleMeterValues(msgIn, msgOut);
+                    errorCode = HandleMeterValuesAsync(msgIn, msgOut).Result;
                     break;
 
                 case "StatusNotification":
-                    errorCode = HandleStatusNotification(msgIn, msgOut);
+                    errorCode = HandleStatusNotificationAsync(msgIn, msgOut).Result;
                     break;
 
                 case "DataTransfer":

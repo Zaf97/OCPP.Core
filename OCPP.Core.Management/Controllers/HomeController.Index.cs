@@ -159,7 +159,7 @@ namespace OCPP.Core.Management.Controllers
 
 
                     // List of configured charge points
-                    List<ChargePoint> dbChargePoints = dbContext.ChargePoints.ToList<ChargePoint>();
+                    List<ChargePoint> dbChargePoints = dbContext.ChargePoints.ToList();
                     if (dbChargePoints != null)
                     {
                         // Iterate through all charge points in database

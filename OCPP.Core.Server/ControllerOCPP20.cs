@@ -20,9 +20,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OCPP.Core.Database;
+using OCPP.Core.Server.Hubs;
 using OCPP.Core.Server.Messages_OCPP20;
 
 namespace OCPP.Core.Server
@@ -34,8 +36,8 @@ namespace OCPP.Core.Server
         /// <summary>
         /// Constructor
         /// </summary>
-        public ControllerOCPP20(IConfiguration config, ILoggerFactory loggerFactory, ChargePointStatus chargePointStatus, OCPPCoreContext context) :
-            base(config, loggerFactory, chargePointStatus, context)
+        public ControllerOCPP20(IConfiguration config, ILoggerFactory loggerFactory, ChargePointStatus chargePointStatus, OCPPCoreContext context, IHubContext<OCPPTransactionsHub> dataHub) :
+            base(config, loggerFactory, chargePointStatus, context, dataHub)
         {
             Logger = loggerFactory.CreateLogger(typeof(ControllerOCPP20));
         }

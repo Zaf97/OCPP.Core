@@ -64,6 +64,8 @@ namespace OCPP.Core.Server
         [JsonIgnore]
         public TaskCompletionSource<string> TaskCompletionSource { get; set; }
 
+        public string DateTime { get; set; }
+
 
         /// <summary>
         /// Empty constructor
@@ -75,12 +77,13 @@ namespace OCPP.Core.Server
         /// <summary>
         /// Constructor
         /// </summary>
-        public OCPPMessage(string messageType, string uniqueId, string action, string jsonPayload)
+        public OCPPMessage(string messageType, string uniqueId, string action, string jsonPayload, string date)
         {
             MessageType = messageType;
             UniqueId = uniqueId;
             Action = action;
             JsonPayload = jsonPayload;
+            DateTime = date;
         }
     }
 }
