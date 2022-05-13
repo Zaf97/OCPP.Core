@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace OCPP.Core.Database.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -56,6 +56,11 @@ namespace OCPP.Core.Database.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ConnectorStatus", x => new { x.ChargePointId, x.ConnectorId });
+                    table.ForeignKey(
+                        name: "FK_ConnectorStatus_ChargePoint",
+                        column: x => x.ChargePointId,
+                        principalTable: "ChargePoint",
+                        principalColumn: "ChargePointId");
                 });
 
             migrationBuilder.CreateTable(
@@ -74,6 +79,12 @@ namespace OCPP.Core.Database.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_MessageLog", x => x.LogId);
+                    table.ForeignKey(
+                        name: "FK_MessageLog_ChargePoint_ChargePointId",
+                        column: x => x.ChargePointId,
+                        principalTable: "ChargePoint",
+                        principalColumn: "ChargePointId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -112,6 +123,11 @@ namespace OCPP.Core.Database.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_MessageLog_ChargePointId",
+                table: "MessageLog",
+                column: "ChargePointId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MessageLog_ChargePointId1",
                 table: "MessageLog",
                 column: "LogTime");
 

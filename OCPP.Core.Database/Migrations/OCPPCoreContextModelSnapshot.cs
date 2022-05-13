@@ -207,7 +207,10 @@ namespace OCPP.Core.Database.Migrations
 
                     b.HasKey("LogId");
 
-                    b.HasIndex(new[] { "LogTime" }, "IX_MessageLog_ChargePointId");
+                    b.HasIndex("ChargePointId");
+
+                    b.HasIndex(new[] { "LogTime" }, "IX_MessageLog_ChargePointId")
+                        .HasDatabaseName("IX_MessageLog_ChargePointId1");
 
                     b.ToTable("MessageLog", (string)null);
                 });
@@ -267,6 +270,28 @@ namespace OCPP.Core.Database.Migrations
                     b.ToTable("Transactions");
                 });
 
+            modelBuilder.Entity("OCPP.Core.Database.ConnectorStatus", b =>
+                {
+                    b.HasOne("OCPP.Core.Database.ChargePoint", "ChargePoint")
+                        .WithMany("ConnectorStatus")
+                        .HasForeignKey("ChargePointId")
+                        .IsRequired()
+                        .HasConstraintName("FK_ConnectorStatus_ChargePoint");
+
+                    b.Navigation("ChargePoint");
+                });
+
+            modelBuilder.Entity("OCPP.Core.Database.MessageLog", b =>
+                {
+                    b.HasOne("OCPP.Core.Database.ChargePoint", "ChargePoint")
+                        .WithMany()
+                        .HasForeignKey("ChargePointId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ChargePoint");
+                });
+
             modelBuilder.Entity("OCPP.Core.Database.Transaction", b =>
                 {
                     b.HasOne("OCPP.Core.Database.ChargePoint", "ChargePoint")
@@ -280,6 +305,8 @@ namespace OCPP.Core.Database.Migrations
 
             modelBuilder.Entity("OCPP.Core.Database.ChargePoint", b =>
                 {
+                    b.Navigation("ConnectorStatus");
+
                     b.Navigation("Transactions");
                 });
 #pragma warning restore 612, 618
