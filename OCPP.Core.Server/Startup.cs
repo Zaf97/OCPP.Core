@@ -101,7 +101,7 @@ namespace OCPP.Core.Server
             // Set WebSocketsOptions
             var webSocketOptions = new WebSocketOptions()
             {
-                KeepAliveInterval = TimeSpan.FromSeconds(120),
+                KeepAliveInterval = TimeSpan.FromMinutes(2),
             };
 
             app.UseCors();

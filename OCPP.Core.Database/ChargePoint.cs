@@ -39,5 +39,7 @@ namespace OCPP.Core.Database
         public string ClientCertThumb { get; set; }
 
         public virtual ICollection<Transaction> Transactions { get; set; }
+
+        public virtual ICollection<ConnectorStatus> ConnectorStatus { get; set; }
     }
 }

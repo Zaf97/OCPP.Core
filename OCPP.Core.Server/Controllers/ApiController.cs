@@ -163,7 +163,7 @@ namespace OCPP.Core.Server.Controllers
         }
 
         [HttpPost("SetChargingProfile/{chargePointId}")]
-        public async Task SetChargingProfile(int chargePointId, [FromBody] ChargingProfile chargingProfile)
+        public async Task SetChargingProfile(string chargePointId, [FromBody] ChargingProfile chargingProfile)
         {
             var context = HttpContext;
             // Check authentication (X-API-Key) 

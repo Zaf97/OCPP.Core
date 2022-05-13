@@ -185,7 +185,7 @@ namespace OCPP.Core.Server
         /// <summary>
         /// Waits for new OCPP V1.6 messages on the open websocket connection and delegates processing to a controller
         /// </summary>
-        public async Task SetChargingProfile(ChargePointStatus chargePointStatus, HttpContext apiCallerContext, int connectorId, Messages_OCPP16.ChargingProfile chargingProfile)
+        public async Task SetChargingProfile(ChargePointStatus chargePointStatus, HttpContext apiCallerContext, string connectorId, Messages_OCPP16.ChargingProfile chargingProfile)
         {
             ILogger logger = _logFactory.CreateLogger("OCPPMiddleware.OCPP16");
 

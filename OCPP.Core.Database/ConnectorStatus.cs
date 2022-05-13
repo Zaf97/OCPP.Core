@@ -19,6 +19,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
@@ -36,5 +37,8 @@ namespace OCPP.Core.Database
 
         public double? LastMeter { get; set; }
         public DateTime? LastMeterTime { get; set; }
+
+        [ForeignKey(nameof(ChargePointId))]
+        public virtual ChargePoint ChargePoint { get; set; }
     }
 }

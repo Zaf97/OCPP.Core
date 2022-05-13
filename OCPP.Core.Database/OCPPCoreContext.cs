@@ -89,6 +89,23 @@ namespace OCPP.Core.Database
                 entity.Property(e => e.TagName).HasMaxLength(200);
             });
 
+            //modelBuilder.Entity<TagsGroup>(entity =>
+            //{
+            //    entity.HasKey(e => e.Id)
+            //        .HasName("PK_TagGroupId");
+
+            //    entity.Property(e => e.TagId);
+
+            //    entity.Property(e => e.ParentId);
+
+            //    entity.HasOne(d => d.ParentId)
+            //        .WithMany(p => p.TagId)
+            //        .HasForeignKey(d => d.ChargePointId)
+            //        .OnDelete(DeleteBehavior.ClientSetNull)
+            //        .HasConstraintName("FK_ConnectorStatus_ChargePoint");
+
+            //});
+
             modelBuilder.Entity<ConnectorStatus>(entity =>
             {
                 entity.HasKey(e => new { e.ChargePointId, e.ConnectorId });
@@ -100,6 +117,12 @@ namespace OCPP.Core.Database
                 entity.Property(e => e.ConnectorName).HasMaxLength(100);
 
                 entity.Property(e => e.LastStatus).HasMaxLength(100);
+
+                entity.HasOne(d => d.ChargePoint)
+                    .WithMany(p => p.ConnectorStatus)
+                    .HasForeignKey(d => d.ChargePointId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ConnectorStatus_ChargePoint");
             });
 
             modelBuilder.Entity<ConnectorStatusView>(entity =>

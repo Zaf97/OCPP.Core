@@ -19,6 +19,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
@@ -33,5 +34,8 @@ namespace OCPP.Core.Database
         public string Message { get; set; }
         public string Result { get; set; }
         public string ErrorCode { get; set; }
+
+        [ForeignKey(nameof(ChargePointId))]
+        public virtual ChargePoint ChargePoint { get; set; }
     }
 }
